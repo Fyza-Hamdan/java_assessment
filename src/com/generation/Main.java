@@ -87,7 +87,41 @@ public class Main
 
     private static void gradeStudent( StudentService studentService, Scanner scanner )
     {
+        System.out.println("Enter student ID: ");
+        String studentId = scanner.next();
+        Student student = studentService.findStudent(studentId);
 
+        if (student == null) {
+            System.out.println("Student not found");
+            return;
+    }
+
+        System.out.println("Enter course code: ");
+        String courseCode = scanner.next();
+
+        if (student.isAttendingCourse(courseCode)) {
+            System.out.println("Enter grade (0-100): ");
+            double grade = scanner.nextDouble();
+
+            if (grade >= 60) {
+                Course course = student.getApprovedCourses().stream()
+                        .filter(c -> c.getCode().equals(courseCode))
+                        .findFirst()
+                        .orElse(null);
+
+                if (course == null) {
+
+                    CourseService courseService = new CourseService();
+                    Course getCourse = courseService.getCourse(courseCode);
+                    student.registerApprovedCourse(getCourse);
+                    System.out.println("Course " + courseCode + " has been approved for student " + studentId);
+                }
+            } else {
+                System.out.println("The grade is not high enough to approve the course");
+            }
+        } else {
+            System.out.println("Student is not enrolled in that course");
+        }
     }
 
     private static void findStudent( StudentService studentService, Scanner scanner )
@@ -112,4 +146,6 @@ public class Main
         Student student = PrinterHelper.createStudentMenu( scanner );
         studentService.subscribeStudent( student );
     }
+
+
 }

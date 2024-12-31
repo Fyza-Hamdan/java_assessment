@@ -16,6 +16,8 @@ public class Student
 
     private final Map<String, Course> approvedCourses = new HashMap<>();
 
+    private final Map<String, Double> courseGrades = new HashMap<>();
+
     public Student( String id, String name, String email, Date birthDate )
     {
         super( id, name, email, birthDate );
@@ -24,6 +26,10 @@ public class Student
     public void enrollToCourse( Course course )
     {
         //TODO implement this method
+        if (course != null && !isAttendingCourse(course.getCode())) {
+            courses.add(course);
+        }
+
     }
 
     public void registerApprovedCourse( Course course )
@@ -32,21 +38,49 @@ public class Student
     }
 
     public boolean isCourseApproved( String courseCode )
+
     {
         //TODO implement this method
-        return false;
+        return approvedCourses.containsKey(courseCode);
+
     }
+
+    public void setGrade(String courseCode, double grade) {
+        courseGrades.put(courseCode, grade);
+    }
+
+    public Double getGrade(String courseCode) {
+        return courseGrades.get(courseCode);
+    }
+
 
     // CHALLENGE IMPLEMENTATION: Read README.md to find instructions on how to solve. 
     public List<Course> findPassedCourses( Course course )
     {
+        List<Course> passedCourses = new ArrayList<>();
+        for (String courseCode : courseGrades.keySet()) {
+            Double grade = courseGrades.get(courseCode);
+            if (grade != null && grade >= 60) {
+                Course passedCourse = approvedCourses.get(courseCode);
+                if (passedCourse != null) {
+                    passedCourses.add(passedCourse);
+                }
+            }
+        }
+
         //TODO implement this method
-        return null;
+        //return null;
+        return passedCourses;
     }
 
     public boolean isAttendingCourse( String courseCode )
     {
         //TODO implement this method
+        for (Course course : courses) {
+            if (course.getCode().equals(courseCode)) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -60,7 +94,8 @@ public class Student
     public List<Course> getApprovedCourses()
     {
         //TODO implement this method
-        return null;
+        return new ArrayList<>(approvedCourses.values());
+        //return null;
     }
 
     @Override
